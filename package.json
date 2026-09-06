@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "description": "Guardian sustainability project discovery plugin for the Hedera Agent Kit",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc",
     "test": "echo \"No tests configured yet\""
   },
   "dependencies": {
@@ -12,5 +18,9 @@
   },
   "peerDependencies": {
     "@hashgraph/hedera-agent-kit": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@hashgraph/hedera-agent-kit": ">=5.0.0",
+    "typescript": "^5.7.0"
   }
 }
