@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { BaseTool } from '@hashgraph/hedera-agent-kit';
+import {
+  BaseTool,
+  untypedQueryOutputParser,
+} from '@hashgraph/hedera-agent-kit';
 
 const parameters = z.object({
   query: z
@@ -19,6 +22,7 @@ const parameters = z.object({
 
 export class SearchGuardianProjectsTool extends BaseTool {
   method = 'search_guardian_projects';
+  outputParser = untypedQueryOutputParser;
   name = 'Search Guardian Projects';
   description =
     'Searches Guardian sustainability project data and returns matching project information.';
