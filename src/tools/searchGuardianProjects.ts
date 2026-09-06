@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { z } from 'zod';
 import {
-  BaseTool,
+  BaseQueryTool,
   untypedQueryOutputParser,
 } from '@hashgraph/hedera-agent-kit';
 
@@ -22,19 +22,25 @@ const parameters = z.object({
     .describe('Maximum number of matching projects to return'),
 });
 
-export class SearchGuardianProjectsTool extends BaseTool {
+export class SearchGuardianProjectsTool extends BaseQueryTool {
   method = SEARCH_GUARDIAN_PROJECTS_TOOL;
   outputParser = untypedQueryOutputParser;
   name = 'Search Guardian Projects';
   description =
     'Searches Guardian sustainability project data and returns matching project information.';
   parameters = parameters;
-
-async coreAction(
+  async normalizeParams(
   params: z.infer<typeof parameters>,
-  _context?: unknown,
-  _client?: unknown,
+  _context: any,
+  _client: any,
 ) {
+  return params;
+}
+  async coreAction(
+    params: z.infer<typeof parameters>,
+    _context?: unknown,
+    _client?: unknown,
+  ) {
     const baseURL = process.env.GUARDIAN_API_URL;
     const token = process.env.GUARDIAN_API_TOKEN;
 
@@ -83,8 +89,19 @@ async coreAction(
     };
   }
 
-  shouldSecondaryAction() {
+  async shouldSecondaryAction(
+    _coreActionResult: any,
+    _context: any,
+  ): Promise<boolean> {
     return false;
+  }
+
+  async secondaryAction(
+    result: any,
+    _client: any,
+    _context: any,
+  ) {
+    return result;
   }
 }
 
