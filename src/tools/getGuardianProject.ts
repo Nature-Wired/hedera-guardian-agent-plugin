@@ -5,6 +5,8 @@ import {
   untypedQueryOutputParser,
 } from '@hashgraph/hedera-agent-kit';
 
+export const GET_GUARDIAN_PROJECT_TOOL = 'get_guardian_project';
+
 const parameters = z.object({
   projectId: z
     .string()
@@ -13,21 +15,24 @@ const parameters = z.object({
 });
 
 export class GetGuardianProjectTool extends BaseTool {
-  method = 'get_guardian_project';
+  method = GET_GUARDIAN_PROJECT_TOOL;
   outputParser = untypedQueryOutputParser;
   name = 'Get Guardian Project';
   description =
     'Retrieves detailed information for a selected Guardian sustainability project.';
   parameters = parameters;
 
-  async coreAction(params: z.infer<typeof parameters>) {
+  async coreAction(
+  params: z.infer<typeof parameters>,
+  _context?: unknown,
+  _client?: unknown,
+  ) {
     const baseURL = process.env.GUARDIAN_API_URL;
     const token = process.env.GUARDIAN_API_TOKEN;
 
     if (!baseURL) {
       throw new Error('GUARDIAN_API_URL is not configured');
     }
-
     const client = axios.create({
       baseURL,
       timeout: 25000,
@@ -68,4 +73,8 @@ export class GetGuardianProjectTool extends BaseTool {
   }
 }
 
-export default GetGuardianProjectTool;
+
+const getGuardianProjectTool = (_context: unknown) =>
+  new GetGuardianProjectTool();
+
+export default getGuardianProjectTool;
