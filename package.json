@@ -1,0 +1,14 @@
+{
+  "name": "hedera-guardian-agent-plugin",
+  "version": "0.1.0",
+  "description": "Guardian sustainability project discovery plugin for the Hedera Agent Kit",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests configured yet\""
+  },
+  "dependencies": {
+    "@hashgraph/hedera-agent-kit": "^4.0.0",
+    "axios": "^1.7.0",
+    "zod": "^3.23.0"
+  }
+}
