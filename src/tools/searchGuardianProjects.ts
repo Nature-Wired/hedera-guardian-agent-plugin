@@ -5,6 +5,8 @@ import {
   untypedQueryOutputParser,
 } from '@hashgraph/hedera-agent-kit';
 
+export const SEARCH_GUARDIAN_PROJECTS_TOOL = 'search_guardian_projects';
+
 const parameters = z.object({
   query: z
     .string()
@@ -21,14 +23,18 @@ const parameters = z.object({
 });
 
 export class SearchGuardianProjectsTool extends BaseTool {
-  method = 'search_guardian_projects';
+  method = SEARCH_GUARDIAN_PROJECTS_TOOL;
   outputParser = untypedQueryOutputParser;
   name = 'Search Guardian Projects';
   description =
     'Searches Guardian sustainability project data and returns matching project information.';
   parameters = parameters;
 
-  async coreAction(params: z.infer<typeof parameters>) {
+async coreAction(
+  params: z.infer<typeof parameters>,
+  _context?: unknown,
+  _client?: unknown,
+) {
     const baseURL = process.env.GUARDIAN_API_URL;
     const token = process.env.GUARDIAN_API_TOKEN;
 
@@ -82,4 +88,7 @@ export class SearchGuardianProjectsTool extends BaseTool {
   }
 }
 
-export default SearchGuardianProjectsTool;
+const searchGuardianProjectsTool = (_context: unknown) =>
+  new SearchGuardianProjectsTool();
+
+export default searchGuardianProjectsTool;
