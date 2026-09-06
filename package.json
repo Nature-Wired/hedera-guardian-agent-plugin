@@ -7,8 +7,10 @@
     "test": "echo \"No tests configured yet\""
   },
   "dependencies": {
-    "@hashgraph/hedera-agent-kit": "^4.0.0",
     "axios": "^1.7.0",
     "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "@hashgraph/hedera-agent-kit": ">=5.0.0"
   }
 }
