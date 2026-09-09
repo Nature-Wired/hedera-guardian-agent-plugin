@@ -1,17 +1,42 @@
 {
   "name": "hedera-guardian-agent-plugin",
   "version": "0.1.0",
-  "description": "Guardian sustainability project discovery plugin for the Hedera Agent Kit",
+  "description": "Sustainability Atlas project discovery and retrieval plugin for the Hedera Agent Kit",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "test": "echo \"No tests configured yet\""
+    "test": "echo \"No automated tests configured yet\""
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nature-Wired/hedera-guardian-agent-plugin.git"
+  },
+  "homepage": "https://github.com/Nature-Wired/hedera-guardian-agent-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/Nature-Wired/hedera-guardian-agent-plugin/issues"
+  },
+  "keywords": [
+    "hedera",
+    "guardian",
+    "hedera-agent-kit",
+    "sustainability",
+    "sustainability-atlas",
+    "ai-agent",
+    "climate",
+    "nature"
+  ],
+  "license": "Apache-2.0",
   "dependencies": {
     "axios": "^1.7.0",
     "zod": "^3.23.0"
