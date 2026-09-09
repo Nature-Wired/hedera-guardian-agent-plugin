@@ -23,6 +23,7 @@ The underlying tool names are:
 
 ```bash
 npm install @nature-wired/hedera-guardian-agent-plugin
+```
 
 ## Search sustainability projects
 
