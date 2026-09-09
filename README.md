@@ -19,6 +19,11 @@ The underlying tool names are:
 - `search_guardian_projects`
 - `get_guardian_project`
 
+## Installation
+
+```bash
+npm install @nature-wired/hedera-guardian-agent-plugin
+
 ## Search sustainability projects
 
 The search tool returns structured project information including:
