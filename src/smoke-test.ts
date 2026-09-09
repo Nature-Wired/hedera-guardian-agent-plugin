@@ -1,31 +1,53 @@
+import searchGuardianProjectsTool from './tools/searchGuardianProjects.js';
 import getGuardianProjectTool from './tools/getGuardianProject.js';
 
 async function main() {
-  const tool = getGuardianProjectTool({});
+  const searchTool = searchGuardianProjectsTool({});
+  const detailTool = getGuardianProjectTool({});
 
-  const result = await tool.coreAction(
+  const searchResult = await searchTool.coreAction(
     {
-      sourceTimestamp: '1785327655.183021104',
+      query: 'mangrove',
+      pageSize: 5,
     },
     undefined,
     undefined,
   );
 
+  console.log('\nSEARCH RESULT');
+  console.log(JSON.stringify(searchResult, null, 2));
+
+  const firstProject = searchResult.raw.projects[0];
+
+  if (!firstProject?.sourceTimestamp) {
+    throw new Error('No sourceTimestamp returned from project search');
+  }
+
+  const detailResult = await detailTool.coreAction(
+    {
+      sourceTimestamp: firstProject.sourceTimestamp,
+    },
+    undefined,
+    undefined,
+  );
+
+  console.log('\nPROJECT DETAIL');
   console.log(
     JSON.stringify(
       {
-        humanMessage: result.humanMessage,
+        humanMessage: detailResult.humanMessage,
         project: {
-          name: result.raw.project?.name ?? null,
-          sourceTimestamp: result.raw.project?.sourceTimestamp ?? null,
-          registryName: result.raw.project?.registryName ?? null,
-          developer: result.raw.project?.developer ?? null,
-          methodology: result.raw.project?.methodology ?? null,
-          category: result.raw.project?.category ?? null,
-          sector: result.raw.project?.sector ?? null,
-          status: result.raw.project?.status ?? null,
-          lifecycleStage: result.raw.project?.lifecycleStage ?? null,
-          sdgs: result.raw.project?.sdgs ?? [],
+          name: detailResult.raw.project?.name ?? null,
+          sourceTimestamp: detailResult.raw.project?.sourceTimestamp ?? null,
+          country: detailResult.raw.project?.country ?? null,
+          registryName: detailResult.raw.project?.registryName ?? null,
+          developer: detailResult.raw.project?.developer ?? null,
+          methodology: detailResult.raw.project?.methodology ?? null,
+          category: detailResult.raw.project?.category ?? null,
+          sector: detailResult.raw.project?.sector ?? null,
+          status: detailResult.raw.project?.status ?? null,
+          lifecycleStage: detailResult.raw.project?.lifecycleStage ?? null,
+          sdgs: detailResult.raw.project?.sdgs ?? [],
         },
       },
       null,

@@ -11,7 +11,7 @@ const parameters = z.object({
   query: z
     .string()
     .min(1)
-    .describe('Keyword or phrase used to search Guardian sustainability projects'),
+    .describe('Keyword or phrase used to search sustainability projects'),
   pageSize: z
     .number()
     .int()
@@ -25,55 +25,61 @@ const parameters = z.object({
 export class SearchGuardianProjectsTool extends BaseQueryTool {
   method = SEARCH_GUARDIAN_PROJECTS_TOOL;
   outputParser = untypedQueryOutputParser;
-  name = 'Search Guardian Projects';
+  name = 'Search Sustainability Projects';
   description =
-    'Searches Guardian sustainability project data and returns matching project information.';
+    'Searches Sustainability Atlas project data and returns matching Guardian sustainability projects.';
   parameters = parameters;
+
   async normalizeParams(
-  params: z.infer<typeof parameters>,
-  _context: any,
-  _client: any,
-) {
-  return params;
-}
+    params: z.infer<typeof parameters>,
+    _context: any,
+    _client: any,
+  ) {
+    return params;
+  }
+
   async coreAction(
     params: z.infer<typeof parameters>,
     _context?: unknown,
     _client?: unknown,
   ) {
-    const baseURL = process.env.GUARDIAN_API_URL;
-    const token = process.env.GUARDIAN_API_TOKEN;
+    const atlasApiKey = process.env.ATLAS_API_KEY;
+    const atlasApiUrl =
+      process.env.ATLAS_API_URL ?? 'https://atlas.xeptagon.com/api/v1';
 
-    if (!baseURL) {
-      throw new Error('GUARDIAN_API_URL is not configured');
+    if (!atlasApiKey) {
+      throw new Error('ATLAS_API_KEY is not configured');
     }
 
-    const client = axios.create({
-      baseURL,
-      timeout: 25000,
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
-    });
-
-    const response = await client.get('/search', {
-      params: {
-        search: params.query,
-        pageIndex: 0,
-        pageSize: params.pageSize,
+    const response = await axios.get(
+      `${atlasApiUrl}/mainnet/projects`,
+      {
+        timeout: 25000,
+        headers: {
+          'x-api-key': atlasApiKey,
+        },
+        params: {
+          search: params.query,
+        },
       },
-    });
+    );
 
-    const items = Array.isArray(response.data)
-      ? response.data
-      : response.data?.items ?? [];
+    const items = Array.isArray(response.data?.data)
+      ? response.data.data
+      : [];
 
-    const projects = items.slice(0, params.pageSize).map((item: any) => ({
-      id: item.consensusTimestamp ?? item.uuid ?? null,
-      schemaName: item.analytics?.schemaName ?? null,
-      textSearch: item.analytics?.textSearch ?? null,
+    const projects = items.slice(0, params.pageSize).map((project: any) => ({
+      sourceTimestamp: project.sourceTimestamp ?? null,
+      name: project.name ?? null,
+      country: project.country ?? null,
+      registryName: project.registryName ?? null,
+      developer: project.developer ?? null,
+      methodology: project.methodology ?? null,
+      category: project.category ?? null,
+      sector: project.sector ?? null,
+      status: project.status ?? null,
+      lifecycleStage: project.lifecycleStage ?? null,
+      sdgs: project.sdgs ?? [],
     }));
 
     return {
@@ -84,8 +90,8 @@ export class SearchGuardianProjectsTool extends BaseQueryTool {
       },
       humanMessage:
         projects.length > 0
-          ? `Found ${projects.length} Guardian project result(s) for "${params.query}".`
-          : `No Guardian project results found for "${params.query}".`,
+          ? `Found ${projects.length} Sustainability Atlas project result(s) for "${params.query}".`
+          : `No Sustainability Atlas project results found for "${params.query}".`,
     };
   }
 
