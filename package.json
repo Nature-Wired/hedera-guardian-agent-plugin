@@ -1,5 +1,5 @@
 {
-  "name": "hedera-guardian-agent-plugin",
+  "name": "@nature-wired/hedera-guardian-agent-plugin",
   "version": "0.1.0",
   "description": "Sustainability Atlas project discovery and retrieval plugin for the Hedera Agent Kit",
   "type": "module",
