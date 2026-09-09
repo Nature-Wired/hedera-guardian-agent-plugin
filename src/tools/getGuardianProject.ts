@@ -8,10 +8,10 @@ import {
 export const GET_GUARDIAN_PROJECT_TOOL = 'get_guardian_project';
 
 const parameters = z.object({
-  projectId: z
+  sourceTimestamp: z
     .string()
     .min(1)
-    .describe('Guardian project identifier or consensus timestamp'),
+    .describe('HCS consensus timestamp for the Guardian project'),
 });
 
 export class GetGuardianProjectTool extends BaseQueryTool {
@@ -19,60 +19,52 @@ export class GetGuardianProjectTool extends BaseQueryTool {
   outputParser = untypedQueryOutputParser;
   name = 'Get Guardian Project';
   description =
-    'Retrieves detailed information for a selected Guardian sustainability project.';
+    'Retrieves decoded sustainability project details from the Sustainability Atlas.';
   parameters = parameters;
+
   async normalizeParams(
-  params: z.infer<typeof parameters>,
-  _context: any,
-  _client: any,
-) {
-  return params;
-}
+    params: z.infer<typeof parameters>,
+    _context: any,
+    _client: any,
+  ) {
+    return params;
+  }
 
   async coreAction(
     params: z.infer<typeof parameters>,
     _context?: unknown,
     _client?: unknown,
   ) {
-    const baseURL = process.env.GUARDIAN_API_URL;
-    const token = process.env.GUARDIAN_API_TOKEN;
+    const atlasApiKey = process.env.ATLAS_API_KEY;
+    const atlasApiUrl =
+      process.env.ATLAS_API_URL ?? 'https://atlas.xeptagon.com/api/v1';
 
-    if (!baseURL) {
-      throw new Error('GUARDIAN_API_URL is not configured');
+    if (!atlasApiKey) {
+      throw new Error('ATLAS_API_KEY is not configured');
     }
 
-    const client = axios.create({
-      baseURL,
-      timeout: 25000,
-      headers: token
-        ? {
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
-    });
-
-    const response = await client.get('/entities/vc-documents', {
-      params: {
-        consensusTimestamp: params.projectId,
-        pageIndex: 0,
-        pageSize: 1,
+    const response = await axios.get(
+      `${atlasApiUrl}/mainnet/projects/${encodeURIComponent(
+        params.sourceTimestamp,
+      )}`,
+      {
+        timeout: 25000,
+        headers: {
+          'x-api-key': atlasApiKey,
+        },
       },
-    });
+    );
 
-    const items = Array.isArray(response.data)
-      ? response.data
-      : response.data?.items ?? [];
-
-    const project = items[0] ?? null;
+    const project = response.data ?? null;
 
     return {
       raw: {
-        projectId: params.projectId,
+        sourceTimestamp: params.sourceTimestamp,
         project,
       },
       humanMessage: project
-        ? `Retrieved Guardian project details for ${params.projectId}.`
-        : `No Guardian project was found for ${params.projectId}.`,
+        ? `Retrieved Sustainability Atlas project details for ${project.name ?? params.sourceTimestamp}.`
+        : `No Sustainability Atlas project was found for ${params.sourceTimestamp}.`,
     };
   }
 
